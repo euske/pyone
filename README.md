@@ -42,7 +42,7 @@ evals it and displays the the retuen value.
 
  * `;`          : Inserts a newline and make proper indentation.
 
-   `A; B; C` will become
+   `A; B; C` becomes
 ```   
     A
     B
@@ -51,7 +51,7 @@ evals it and displays the the retuen value.
 
  * `{ ... }`    : Makes the inner part indented.
  
-   `A { B; C }` will become
+   `A { B; C }` becomes
 ```
     A:
         B
