@@ -4,7 +4,8 @@
 ##  PyOne - Python One-liner helper
 ##  Author: Yusuke Shinyama
 ##
-##  usage: pyone [-d] [-i modules] [-f modules] script args ...
+##  Usage:
+##    $ pyone [-d] [-i modules] [-f modules] script [args ...]
 ##
 ##  Description:
 ##    This is a helper script for quick and dirty one-liner in Python.
@@ -55,7 +56,7 @@
 ##    argv  : command line arguments.
 ##
 ##  Examples:
-##    $ pyone '2+3*5.6'
+##    $ pyone '2+3.4*5'
 ##    $ pyone -f sqlite3 'db=connect("foo.db"); \
 ##         for row in db.execute("SELECT * FROM FOO;"){print(row)}'
 ##    $ pyone -f urllib.request -f html.parser 'class P(HTMLParser){ \
