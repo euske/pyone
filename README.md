@@ -41,7 +41,7 @@ eval it and displays the the retuen value.
 
  * `;`          : Inserts a newline and make proper indentation.
 
-   `A; B; C`
+   `A; B; C` will become
 ```   
     A
     B
@@ -50,7 +50,7 @@ eval it and displays the the retuen value.
 
  * `{ ... }`    : Makes the inner part indented.
  
-   `A { B; C }`
+   `A { B; C }` will become
 ```
     A:
         B
@@ -60,14 +60,14 @@ eval it and displays the the retuen value.
  * `EL{ ... }`  : Wraps the inner part as a loop executed for each line
    of files specified by the command line (or stdin).
    The following variables are available inside.
- ** `L`:   Current line number (0-based).
- ** `S`:   Current raw text, including `"\n"`.
- ** `s`:   Stripped text line.
- ** `F[]`: Splited fields with `DELIM`.
- ** `I[]`: Integer value obtained from each field if any.
+   
+   * `L`:   Current line number (0-based).
+   * `S`:   Current raw text, including `"\n"`.
+   * `s`:   Stripped text line.
+   * `F[]`: Splited fields with `DELIM`.
+   * `I[]`: Integer value obtained from each field if any.
 
- More precisely, it inserts the folloing code:
-
+   More precisely, it inserts the folloing code:
 ```
     for (L,S) in enumerate(fileinput.input()):
         s = S.strip()
