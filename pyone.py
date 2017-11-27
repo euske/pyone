@@ -2,7 +2,7 @@
 # -*-python-*-
 
 ##  PyOne - Python One-liner helper
-##  Author: Yusuke Shinyama <yusuke at shinyama dot jp>
+##  Author: Yusuke Shinyama
 ##
 ##  usage: pyone [-d] [-i modules] [-f modules] script args ...
 ##
@@ -21,47 +21,50 @@
 ##    ;          : inserts a newline and make proper indentation.
 ##                 ex. "A; B; C" is expanded as
 ##
-##                   A
-##                   B
-##                   C
+##      A
+##      B
+##      C
 ##
 ##    { ... }    : makes the inner part indented.
 ##                 ex. "A { B; C }" is expanded as
 ##
-##                   A:
-##                       B
-##                       C
+##      A:
+##          B
+##          C
 ##
 ##    EL{ ... }  : wraps the inner part as a loop executed for each line
 ##                 of files specified by the command line (or stdin).
 ##                 The following variables are available inside.
 ##
-##                   L:   current line number (0-based).
-##                   S:   current raw text, including "\n".
-##                   s:   stripped text line.
-##                   F[]: splited fields with DELIM.
-##                   I[]: integer value obtained from each field if any.
+##      L:   current line number (0-based).
+##      S:   current raw text, including "\n".
+##      s:   stripped text line.
+##      F[]: splited fields with DELIM.
+##      I[]: integer value obtained from each field if any.
 ##
-##                 Precisely, it inserts the folloing code:
+##      Precisely, it inserts the folloing code:
 ##
-##                   for (L,S) in enumerate(fileinput.input()):
-##                       s = S.strip()
-##                       F = s.split(DELIM)
-##                       I = [ toint(v) for v in F ]
-##                       (... your code here ...)
+##      for (L,S) in enumerate(fileinput.input()):
+##          s = S.strip()
+##          F = s.split(DELIM)
+##          I = [ toint(v) for v in F ]
+##          (... your code here ...)
 ##
 ##  Special variables:
 ##    DELIM : field separator used in EL { } loop.
-##    args  : command line arguments.
+##    argv  : command line arguments.
 ##
 ##  Examples:
 ##    $ pyone '2+3*5.6'
-##    $ pyone -f sqlite3 'db=connect("foo.db");for row in db.execute( \
-##                        "SELECT * FROM FOO;") {print(row)}'
-##    $ wget -q -O- http://slashdot.org/ | \
-##      pyone -f sgmllib 't=[""];class p(SGMLParser){def handle_data(s,x){global t;t[-1]+=x;} \
-##                        def start_td(s,x){t.append("")} def end_td(s){print t[-1];del(t[-1])}} \
-##                        x=p(); EL{x.feed(s)}'
+##    $ pyone -f sqlite3 'db=connect("foo.db"); \
+##         for row in db.execute("SELECT * FROM FOO;"){print(row)}'
+##    $ pyone -f urllib.request -f html.parser 'class P(HTMLParser){ \
+##         z=0; def handle_starttag(self,t,_){ if(t=="tr"){self.r=[]} \
+##         elif(t=="td"){self.z=1}} def handle_endtag(self,t){ \
+##         if(t=="tr"){print(",".join(self.r))}elif(t=="td"){self.z=0}} \
+##         def handle_data(self,s){if(self.z){self.r.append(s)}}} \
+##         P().feed(urlopen(argv[1]).read().decode("utf-8"))' \
+##         https://news.ycombinator.com/
 ##
 
 import sys
@@ -98,12 +101,12 @@ def make_script(s):
     # Each time pat1 matches from the beginning of the string
     # to the first occurrence of ";", "{", or "}".
     # Occurrences in quotation are skipped.
-    ind = 0  # current indentation.
+    indent = 0  # current indentation.
     lines = []
     def add(line):
         line = line.strip()
         if line:
-            lines.append('    '*ind + line)
+            lines.append('    '*indent + line)
         return
     b = i = 0
     while i < len(s):
@@ -116,17 +119,17 @@ def make_script(s):
             # EL{ ... } macro expansion.
             add(s[b:e-3])
             add('for (L,S) in enumerate(fileinput.input()):')
-            ind = ind + 1
+            indent = indent + 1
             add('s = S.strip()')
             add('F = s.split(DELIM)')
             add('I = [ toint(v) for v in F ]')
         elif s[e-1] == '{':
             add(s[b:e-1]+':')
-            ind = ind + 1
+            indent = indent + 1
         elif s[e-1] == '}':
             add(s[b:e-1])
-            ind = ind - 1
-            if ind < 0: raise SyntaxError('Invalid Syntax: '+s[b:])
+            indent = indent - 1
+            if indent < 0: raise SyntaxError('Invalid Syntax: '+s[b:])
         elif s[e-1] == ';':
             add(s[b:e-1])
         else:
@@ -143,7 +146,7 @@ def main(argv):
     import getopt
     # get options.
     def usage():
-        print('usage: %s [-d] [-i modules] [-f modules] [-F delim] script args ...' %
+        print('usage: %s [-d] [-i modules] [-f modules] [-F delim] script [args ...]' %
               argv[0])
         return 111
     try:
@@ -161,7 +164,6 @@ def main(argv):
         elif k == '-f':
             lines.extend([ 'from %s import *' % m for m in v.split(',') ])
                          
-
     if not args: return usage()
 
     lines.extend(make_script(args[0]))
@@ -173,7 +175,7 @@ def main(argv):
         return 0
     
     # hand the remaining args to the runtime environment.
-    _locals['args'] = args
+    _locals['argv'] = args
     sys.argv = args
     path = '<script>'
     if len(lines) == 1:
