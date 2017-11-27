@@ -1,13 +1,6 @@
 # PyOne
 
-This is a helper script for a quick and dirty one-liner in Python.
-It converts a given script to properly indented Python code
-and executes it. If a single expression is given it simply
-eval it and displays the the retuen value.
-
-## Usage
-
-    pyone [-d] [-i modules] [-f modules] script [args ...]
+PyOne is a helper script for a quick and dirty one-liner in Python.
 
 ## Examples
 
@@ -30,6 +23,14 @@ eval it and displays the the retuen value.
          def handle_data(self,s){if(self.z){self.r.append(s)}}} \
          P().feed(urlopen(argv[1]).read().decode("utf-8"))' \
          https://news.ycombinator.com/
+
+## Usage
+
+    $ pyone [-d] [-i modules] [-f modules] script [args ...]
+
+PyOne converts a given script to properly indented Python code
+and executes it. When a single expression is given, it simply
+evals it and displays the the retuen value.
 
 ## Command Line Options
 
