@@ -13,10 +13,16 @@ eval it and displays the the retuen value.
 
     $ pyone '2+3.4*5'
     19.0
-    $ pyone -f sqlite3 'db=connect("foo.db"); \
-         for row in db.execute("SELECT * FROM FOO;"){print(row)}'
+
+    $ pyone 'EL{(x,_,_)=s.partition("#");x=x.strip();if(x){print(s.split("\t")[1])}}' /etc/fstab
+    /
+    /boot
+    none
+    
+    $ pyone -f sqlite3 'db=connect("foo.db"); for row in db.execute("SELECT * FROM FOO;"){print(row)}'
     (123, 'Alice')
     (456, 'Bob')
+    
     $ pyone -f urllib.request -f html.parser 'class P(HTMLParser){ \
          z=0; def handle_starttag(self,t,_){ if(t=="tr"){self.r=[]} \
          elif(t=="td"){self.z=1}} def handle_endtag(self,t){ \
@@ -27,45 +33,48 @@ eval it and displays the the retuen value.
 
 ## Command Line Options
 
- * `-d`         : debug mode. (dump the expanded code and exit)
- * `-i modules` : add `import modules` at the beginning of the script.
- * `-f modules` : add `from modules import *` for each module.
+ * `-d`         : Debug mode. (dump the expanded code and exit)
+ * `-i modules` : Adds `import modules` at the beginning of the script.
+ * `-f modules` : Adds `from modules import *` for each module.
 
 ## Script Syntax
 
- * `;`          : inserts a newline and make proper indentation.
+ * `;`          : Inserts a newline and make proper indentation.
 
-    A; B; C
-   
+   `A; B; C`
+```   
     A
     B
     C
+```
 
- * `{ ... }`    : makes the inner part indented.
+ * `{ ... }`    : Makes the inner part indented.
  
-    A { B; C }
-
+   `A { B; C }`
+```
     A:
         B
         C
+```
 
- * `EL{ ... }`  : wraps the inner part as a loop executed for each line
-                 of files specified by the command line (or stdin).
-                 The following variables are available inside.
+ * `EL{ ... }`  : Wraps the inner part as a loop executed for each line
+   of files specified by the command line (or stdin).
+   The following variables are available inside.
+ ** `L`:   Current line number (0-based).
+ ** `S`:   Current raw text, including `"\n"`.
+ ** `s`:   Stripped text line.
+ ** `F[]`: Splited fields with `DELIM`.
+ ** `I[]`: Integer value obtained from each field if any.
 
- ** `L`:   current line number (0-based).
- ** `S`:   current raw text, including `"\n"`.
- ** `s`:   stripped text line.
- ** `F[]`: splited fields with `DELIM`.
- ** `I[]`: integer value obtained from each field if any.
+ More precisely, it inserts the folloing code:
 
-  More precisely, it inserts the folloing code:
-
+```
     for (L,S) in enumerate(fileinput.input()):
         s = S.strip()
         F = s.split(DELIM)
         I = [ toint(v) for v in F ]
         (... your code here ...)
+```
 
 ## Special variables
 
