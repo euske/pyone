@@ -26,7 +26,7 @@ PyOne is a helper script for a quick and dirty one-liner in Python.
 
 ## Usage
 
-    $ pyone [-d] [-i modules] [-f modules] script [args ...]
+    $ pyone [-d] [-i modules] [-f modules] [-F delim] script [args ...]
 
 PyOne converts a given script to properly indented Python code
 and executes it. When a single expression is given, it simply
@@ -37,7 +37,7 @@ evals it and displays the return value.
  * `-d`         : Debug mode. (dump the expanded code and exit)
  * `-i modules` : Adds `import modules` at the beginning of the script.
  * `-f modules` : Adds `from modules import *` for each module.
- * `-F delim` : Sets a field delimiter (`DELIM` variable).
+ * `-F delim` : Sets the field delimiter (`DELIM` variable).
 
 ## Script Syntax
 
@@ -62,7 +62,7 @@ evals it and displays the return value.
  * `EL{ ... }`  wraps the inner part as a loop executed for each line
    of files specified by the command line (or stdin).
    
-   The following variables are available inside:
+   The following variables are available during the loop:
    
    * `L`:   Current line number (0-based).
    * `S`:   Current raw text, including `"\n"`.
@@ -70,7 +70,7 @@ evals it and displays the return value.
    * `F[]`: Split fields with `DELIM`.
    * `I[]`: Integer value obtained from each field if any.
 
-   More precisely, it inserts the following code:
+   More precisely, the following code is inserted:
 ```
     for (L,S) in enumerate(fileinput.input()):
         s = S.strip()
