@@ -7,6 +7,15 @@ PyOne is a helper script for a quick and dirty one-liner in Python.
     $ pyone '2+3.4*5'
     19.0
 
+    $ pyone 'x=3; while 1<x { if(x%2==0) {x//=2} else {x=x*3+1} print(x) }'
+    10
+    5
+    16
+    8
+    4
+    2
+    1
+
     $ pyone 'EL{(x,_,_)=s.partition("#");x=x.strip();if(x){print(s.split("\t")[1])}}' /etc/fstab
     /
     /boot
