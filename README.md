@@ -30,45 +30,47 @@ PyOne is a helper script for a quick and dirty one-liner in Python.
 
 PyOne converts a given script to properly indented Python code
 and executes it. When a single expression is given, it simply
-evals it and displays the the retuen value.
+evals it and displays the return value.
 
 ## Command Line Options
 
  * `-d`         : Debug mode. (dump the expanded code and exit)
  * `-i modules` : Adds `import modules` at the beginning of the script.
  * `-f modules` : Adds `from modules import *` for each module.
+ * `-F delim` : Sets a field delimiter (`DELIM` variable).
 
 ## Script Syntax
 
- * `;`          : Inserts a newline and make proper indentation.
+ * `;`          inserts a newline and make proper indentation.
 
-   `A; B; C` becomes
+   `A; B; C` becomes:
 ```   
     A
     B
     C
 ```
 
- * `{ ... }`    : Makes the inner part indented.
+ * `{ ... }`    makes the inner part indented.
  
-   `A { B; C }` becomes
+   `A { B; C }` becomes:
 ```
     A:
         B
         C
 ```
 
- * `EL{ ... }`  : Wraps the inner part as a loop executed for each line
+ * `EL{ ... }`  wraps the inner part as a loop executed for each line
    of files specified by the command line (or stdin).
-   The following variables are available inside.
+   
+   The following variables are available inside:
    
    * `L`:   Current line number (0-based).
    * `S`:   Current raw text, including `"\n"`.
    * `s`:   Stripped text line.
-   * `F[]`: Splited fields with `DELIM`.
+   * `F[]`: Split fields with `DELIM`.
    * `I[]`: Integer value obtained from each field if any.
 
-   More precisely, it inserts the folloing code:
+   More precisely, it inserts the following code:
 ```
     for (L,S) in enumerate(fileinput.input()):
         s = S.strip()
@@ -79,5 +81,5 @@ evals it and displays the the retuen value.
 
 ## Special variables
 
- * `DELIM` : field separator used in `EL { ... }` loop.
+ * `DELIM` : the field separator used in `EL { ... }` loop.
  * `argv`  : command line arguments.
